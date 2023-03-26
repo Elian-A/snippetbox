@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -15,19 +17,23 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func showSnippet(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display a specific snippet..."))
+	// Extract the value of the id parameter from the query string and try to
+	// convert it to an integer using the strconv.Atoi() function. If it can't
+	// be converted to an integer, or the value is less than 1, we return a 404 page
+	// not found response.
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+	// Use the fmt.Fprintf() function to interpolate the id value with our response
+	// and write it to the http.ResponseWriter.
+	fmt.Fprintf(w, "Display an specific snippet with ID %d...", id)
 }
 
 func createSnippet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
-		// Use the http.Error() function to send a 405 status code and "Method Not
-		// Allowed" string as the response body.
-		/*
-			The pattern of passing http.ResponseWriter to other functions is super-common in Go.
-			In practice, it’s quite rare to use the
-			w.Write() and w.WriteHeader() methods directly like we have been doing so far
-		*/
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
