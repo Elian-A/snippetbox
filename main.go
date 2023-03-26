@@ -20,18 +20,15 @@ func showSnippet(w http.ResponseWriter, r *http.Request) {
 
 func createSnippet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		// Use the Header().Set() method to add an 'Allow: POST' header to the
-		// response header map. The first parameter is the header name, and
-		// the second parameter is the header value.
-		/*
-			Important: Changing the response header map after a call to w.WriteHeader() or
-			w.Write() will have no effect on the headers that the user receives. You need to make
-			sure that your response header map contains all the headers you want before you call
-			these methods.
-		*/
 		w.Header().Set("Allow", http.MethodPost)
-		w.WriteHeader(405)
-		w.Write([]byte("Method Not Allowed"))
+		// Use the http.Error() function to send a 405 status code and "Method Not
+		// Allowed" string as the response body.
+		/*
+			The pattern of passing http.ResponseWriter to other functions is super-common in Go.
+			In practice, it’s quite rare to use the
+			w.Write() and w.WriteHeader() methods directly like we have been doing so far
+		*/
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	w.Write([]byte("Create a new snippet..."))
