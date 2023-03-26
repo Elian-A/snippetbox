@@ -13,15 +13,12 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	// Initialize a slice containing the paths to the two files. Note that the
-	// home.page.tmpl file must be the *first* file in the slice.
+	// Include the footer partial in the template files.
 	files := []string{
 		"./ui/html/home.page.html",
 		"./ui/html/base.layout.html",
+		"./ui/html/footer.partial.html",
 	}
-	// Use the template.ParseFiles() function to read the files and store the
-	// templates in a template set. Notice that we can pass the slice of file paths
-	// as a variadic parameter?
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Println(err.Error())
